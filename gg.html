@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InnovTech Challenge 2026 | CYBOTICS × ESITH</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0A0E1A;
+            --surface: #111827;
+            --card: #161d2e;
+            --accent: #00F5C4;
+            --accent2: #7C3AED;
+            --accent3: #F59E0B;
+            --text: #EEF2FF;
+            --muted: #8B9CC8;
+            --border: rgba(0,245,196,0.15);
+            --glow: rgba(0,245,196,0.08);
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ─── NOISE TEXTURE OVERLAY ─── */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.4;
+        }
+
+        /* ─── MESH GRADIENT BG ─── */
+        .mesh-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse 60% 50% at 20% 10%, rgba(124,58,237,0.18) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 80% 80%, rgba(0,245,196,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 30% at 50% 50%, rgba(245,158,11,0.06) 0%, transparent 50%),
+                var(--bg);
+            pointer-events: none;
+        }
+
+        /* ─── NAV ─── */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 5%;
+            background: rgba(10,14,26,0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-logo {
+            font-family: 'Space Mono', monospace;
+            font-size: 15px;
+            color: var(--accent);
+            text-decoration: none;
+            letter-spacing: 0.08em;
+        }
+
+        .nav-logo span { color: var(--text); }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 36px;
+        }
+
+        .nav-links a {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--muted);
+            text-decoration: none;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--accent); }
+
+        .nav-cta {
+            background: var(--accent);
+            color: var(--bg) !important;
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-weight: 700 !important;
+            font-size: 12px !important;
+            letter-spacing: 0.1em !important;
+            transition: box-shadow 0.2s, transform 0.2s !important;
+        }
+
+        .nav-cta:hover {
+            color: var(--bg) !important;
+            box-shadow: 0 0 20px rgba(0,245,196,0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Mobile nav */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: var(--text);
+            transition: 0.3s;
+        }
+
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10,14,26,0.97);
+            z-index: 99;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .mobile-overlay.open { display: flex; }
+
+        .mobile-overlay a {
+            font-family: 'Syne', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .mobile-overlay a:hover { color: var(--accent); }
+
+        /* ─── HERO ─── */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 5% 80px;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,245,196,0.08);
+            border: 1px solid rgba(0,245,196,0.25);
+            border-radius: 100px;
+            padding: 6px 16px;
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: var(--accent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            animation: fadeUp 0.6s ease both;
+        }
+
+        .hero-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            animation: blink 1.4s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+
+        .hero-edition {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: var(--muted);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            animation: fadeUp 0.7s 0.1s ease both;
+        }
+
+        .hero-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(52px, 9vw, 120px);
+            font-weight: 800;
+            line-height: 0.95;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+            animation: fadeUp 0.8s 0.15s ease both;
+        }
+
+        .hero-title .line1 { display: block; color: var(--text); }
+
+        .hero-title .line2 {
+            display: block;
+            background: linear-gradient(135deg, var(--accent) 0%, #00C9A7 40%, var(--accent2) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle-group {
+            margin: 28px 0 40px;
+            animation: fadeUp 0.8s 0.25s ease both;
+        }
+
+        .hero-theme {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(14px, 2vw, 18px);
+            font-weight: 600;
+            color: var(--accent3);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .hero-desc {
+            font-size: clamp(15px, 1.6vw, 18px);
+            color: var(--muted);
+            max-width: 580px;
+            margin: 0 auto;
+            font-weight: 300;
+        }
+
+        .hero-meta {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 32px;
+            flex-wrap: wrap;
+            margin-bottom: 44px;
+            animation: fadeUp 0.8s 0.3s ease both;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .meta-item svg { color: var(--accent); flex-shrink: 0; }
+
+        .hero-actions {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeUp 0.8s 0.35s ease both;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            background: var(--accent);
+            color: var(--bg);
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 14px 32px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 32px rgba(0,245,196,0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            display: inline-block;
+            background: transparent;
+            color: var(--text);
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 13px 32px;
+            border-radius: 4px;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.2s;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Countdown */
+        .countdown-strip {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            margin-top: 60px;
+            animation: fadeUp 0.8s 0.4s ease both;
+        }
+
+        .cd-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 36px;
+            border: 1px solid var(--border);
+            background: rgba(22,29,46,0.7);
+            backdrop-filter: blur(10px);
+        }
+
+        .cd-item:first-child { border-radius: 8px 0 0 8px; }
+        .cd-item:last-child { border-radius: 0 8px 8px 0; }
+        .cd-item:not(:first-child) { border-left: none; }
+
+        .cd-value {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(28px, 4vw, 48px);
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .cd-label {
+            font-size: 10px;
+            color: var(--muted);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        /* Scroll line */
+        .scroll-line {
+            position: absolute;
+            bottom: 36px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 10px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            font-family: 'Space Mono', monospace;
+            animation: fadeUp 1s 0.6s ease both;
+        }
+
+        .scroll-line::after {
+            content: '';
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--muted), transparent);
+        }
+
+        /* ─── SECTIONS ─── */
+        section {
+            position: relative;
+            z-index: 1;
+            padding: 100px 5%;
+        }
+
+        .section-tag {
+            display: inline-block;
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: var(--accent);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .section-tag::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 1px;
+            background: var(--accent);
+        }
+
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(32px, 4vw, 56px);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin-bottom: 20px;
+        }
+
+        .section-title em {
+            font-style: normal;
+            color: var(--accent);
+        }
+
+        .section-desc {
+            font-size: 16px;
+            color: var(--muted);
+            max-width: 600px;
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        /* ─── ABOUT ─── */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .about-visual {
+            position: relative;
+        }
+
+        .about-card-main {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-card-main::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at top left, rgba(0,245,196,0.06) 0%, transparent 60%);
+        }
+
+        .about-icon-ring {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .about-icon-ring::after {
+            content: '';
+            position: absolute;
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            border: 1px solid rgba(0,245,196,0.2);
+        }
+
+        .club-name-big {
+            font-family: 'Syne', sans-serif;
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: -0.01em;
+            margin-bottom: 6px;
+        }
+
+        .club-sub {
+            font-size: 12px;
+            color: var(--muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+
+        .club-desc {
+            font-size: 15px;
+            color: var(--muted);
+            line-height: 1.75;
+            font-weight: 300;
+        }
+
+        .stat-row {
+            display: flex;
+            gap: 24px;
+            margin-top: 28px;
+        }
+
+        .stat-box {
+            flex: 1;
+            background: rgba(0,245,196,0.05);
+            border: 1px solid rgba(0,245,196,0.12);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-box .num {
+            font-family: 'Space Mono', monospace;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-box .lbl {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+            letter-spacing: 0.05em;
+        }
+
+        .about-text .section-desc { max-width: 100%; margin-bottom: 28px; }
+
+        .context-block {
+            background: var(--card);
+            border-left: 3px solid var(--accent3);
+            border-radius: 0 8px 8px 0;
+            padding: 20px 24px;
+            margin-top: 24px;
+        }
+
+        .context-block h4 {
+            font-family: 'Syne', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent3);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+        }
+
+        .context-block p {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.65;
+        }
+
+        /* ─── THEME SECTION ─── */
+        .theme-section {
+            text-align: center;
+            background: linear-gradient(135deg, rgba(124,58,237,0.12) 0%, rgba(0,245,196,0.06) 100%);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .theme-big {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(36px, 6vw, 80px);
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.02em;
+            margin: 20px 0;
+        }
+
+        .theme-big .t1 { color: var(--text); display: block; }
+        .theme-big .t2 { color: var(--accent); display: block; }
+        .theme-big .t3 {
+            display: block;
+            background: linear-gradient(90deg, var(--accent2), var(--accent3));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .pillars-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 48px;
+        }
+
+        .pillar {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px 24px;
+            width: 200px;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .pillar:hover {
+            border-color: var(--accent);
+            transform: translateY(-6px);
+            box-shadow: 0 16px 40px rgba(0,245,196,0.1);
+        }
+
+        .pillar-icon { font-size: 32px; margin-bottom: 12px; }
+
+        .pillar h4 {
+            font-family: 'Syne', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: 0.05em;
+        }
+
+        /* ─── CRITERIA / OBJECTIVES ─── */
+        .objectives-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .obj-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .obj-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), transparent);
+        }
+
+        .obj-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,245,196,0.08);
+            border-color: rgba(0,245,196,0.3);
+        }
+
+        .obj-number {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: var(--accent);
+            letter-spacing: 0.15em;
+            margin-bottom: 12px;
+            opacity: 0.7;
+        }
+
+        .obj-card h4 {
+            font-family: 'Syne', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .obj-card p {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.65;
+        }
+
+        /* ─── SCHEDULE ─── */
+        .schedule-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .schedule-day-header {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: var(--accent);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .timeline-row {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 20px;
+            align-items: flex-start;
+        }
+
+        .tl-time {
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            color: var(--accent);
+            width: 90px;
+            flex-shrink: 0;
+            padding-top: 16px;
+        }
+
+        .tl-dot-line {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .tl-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent);
+            margin-top: 20px;
+            flex-shrink: 0;
+        }
+
+        .tl-line {
+            width: 1px;
+            flex: 1;
+            background: var(--border);
+            min-height: 20px;
+        }
+
+        .tl-card {
+            flex: 1;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            transition: border-color 0.2s;
+        }
+
+        .tl-card:hover { border-color: rgba(0,245,196,0.3); }
+
+        .tl-card h4 {
+            font-family: 'Syne', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .tl-card p {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        /* ─── VENUE ─── */
+        .venue-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: start;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .venue-info-block h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+
+        .venue-info-block p {
+            font-size: 15px;
+            color: var(--muted);
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .venue-detail-item {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .venue-detail-item svg { color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+
+        .venue-map-wrap {
+            border-radius: 12px;
+            overflow: hidden;
+            height: 360px;
+            border: 1px solid var(--border);
+        }
+
+        .venue-map-wrap iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            filter: grayscale(0.4) invert(0.9) hue-rotate(170deg);
+        }
+
+        /* ─── CTA BANNER ─── */
+        .cta-banner {
+            text-align: center;
+            background: linear-gradient(135deg, rgba(0,245,196,0.08) 0%, rgba(124,58,237,0.12) 100%);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 80px 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .cta-banner h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(28px, 4vw, 52px);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+        }
+
+        .cta-banner p {
+            font-size: 16px;
+            color: var(--muted);
+            max-width: 480px;
+            margin: 0 auto 36px;
+        }
+
+        /* ─── FOOTER ─── */
+        footer {
+            position: relative;
+            z-index: 1;
+            padding: 60px 5% 30px;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 48px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .footer-brand .logo-word {
+            font-family: 'Syne', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: -0.01em;
+        }
+
+        .footer-brand p {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.65;
+            margin-top: 12px;
+            max-width: 280px;
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .social-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .social-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(0,245,196,0.06);
+        }
+
+        .footer-col h5 {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: var(--muted);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .footer-col a {
+            display: block;
+            font-size: 14px;
+            color: var(--muted);
+            text-decoration: none;
+            margin-bottom: 10px;
+            transition: color 0.2s;
+        }
+
+        .footer-col a:hover { color: var(--text); }
+
+        .footer-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--muted);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ─── ANIMATIONS ─── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ─── DIVIDER ─── */
+        .divider {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 900px) {
+            .about-grid, .venue-layout { grid-template-columns: 1fr; gap: 40px; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .nav-links { display: none; }
+            .hamburger { display: flex; }
+        }
+
+        @media (max-width: 600px) {
+            section { padding: 70px 5%; }
+            .cd-item { padding: 14px 18px; }
+            .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+            .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+            .stat-row { flex-direction: column; }
+            .countdown-strip { flex-wrap: wrap; }
+            .cd-item:first-child { border-radius: 8px 8px 0 0; }
+            .cd-item:last-child { border-radius: 0 0 8px 8px; }
+            .cd-item:not(:first-child) { border-left: 1px solid var(--border); border-top: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="mesh-bg"></div>
+
+<!-- NAV -->
+<nav>
+    <a href="#" class="nav-logo">
+        <img src="logo.png" alt="CYBOTICS" style="height: 50px; width: 120px; object-fit: contain; display: block;">
+    </a>
+    <ul class="nav-links">
+        <li><a href="#about">À propos</a></li>
+        <li><a href="#theme">Thème</a></li>
+        <li><a href="#objectifs">Objectifs</a></li>
+        <li><a href="#programme">Programme</a></li>
+        <li><a href="#venue">Lieu</a></li>
+        <li><a href="#participer" class="nav-cta">Participer</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<!-- MOBILE OVERLAY -->
+<div class="mobile-overlay" id="mobileOverlay">
+    <a href="#about" class="mob-link">À propos</a>
+    <a href="#theme" class="mob-link">Thème</a>
+    <a href="#objectifs" class="mob-link">Objectifs</a>
+    <a href="#programme" class="mob-link">Programme</a>
+    <a href="#venue" class="mob-link">Lieu</a>
+    <a href="#participer" class="mob-link">Participer</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="top">
+    <div class="hero-badge">CYBOTICS × ESITH — 1ère Édition</div>
+    <h1 class="hero-title">
+        <span class="line1">InnovTech</span>
+        <span class="line2">Challenge</span>
+    </h1>
+    <div class="hero-subtitle-group">
+        <p class="hero-theme">Tech for Social Impact with AI</p>
+        <p class="hero-desc">Une compétition technologique dédiée à la conception de solutions numériques innovantes intégrant l'Intelligence Artificielle au service de l'impact social.</p>
+    </div>
+    <div class="hero-meta">
+        <div class="meta-item">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            15 Avril 2026
+        </div>
+        <div class="meta-item">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            ESITH, Casablanca
+        </div>
+        <div class="meta-item">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Ouvert aux étudiants
+        </div>
+    </div>
+    <div class="hero-actions">
+        <a href="#participer" class="btn-primary">Participer maintenant</a>
+        <a href="#about" class="btn-outline">En savoir plus</a>
+    </div>
+    <div class="countdown-strip">
+        <div class="cd-item">
+            <div class="cd-value" id="cd-days">--</div>
+            <div class="cd-label">Jours</div>
+        </div>
+        <div class="cd-item">
+            <div class="cd-value" id="cd-hours">--</div>
+            <div class="cd-label">Heures</div>
+        </div>
+        <div class="cd-item">
+            <div class="cd-value" id="cd-mins">--</div>
+            <div class="cd-label">Minutes</div>
+        </div>
+        <div class="cd-item">
+            <div class="cd-value" id="cd-secs">--</div>
+            <div class="cd-label">Secondes</div>
+        </div>
+    </div>
+    <div class="scroll-line">Scroll</div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+    <div class="about-grid">
+        <div class="about-visual fade-up">
+            <div class="about-card-main">
+                <div class="about-icon-ring">
+                    <svg width="36" height="36" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" stroke-width="1.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+                <div class="club-name-big">CYBOTICS</div>
+                <p class="club-sub">Club Étudiant — ESITH · Fondé en 2022</p>
+                <p class="club-desc">Fondé en décembre 2022 au sein de l'ESITH, le club CYBOTICS est un espace dédié aux technologies, à l'innovation et au développement des compétences numériques des étudiants marocains.</p>
+                <div class="stat-row">
+                    <div class="stat-box">
+                        <div class="num">2022</div>
+                        <div class="lbl">Fondation</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="num">1ère</div>
+                        <div class="lbl">Édition</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="num">ESITH</div>
+                        <div class="lbl">Casablanca</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="about-text fade-up">
+            <span class="section-tag">L'événement</span>
+            <h2 class="section-title">Qu'est-ce que l'<em>InnovTech Challenge</em> ?</h2>
+            <p class="section-desc">Une compétition académique et innovante qui offre aux étudiants une plateforme professionnelle pour développer, présenter et valoriser des projets technologiques répondant à des problématiques sociétales réelles.</p>
+            <div class="context-block">
+                <h4>Contexte & Motivation</h4>
+                <p>Face aux défis sociaux actuels — environnement, éducation, bien-être et inclusion — l'Intelligence Artificielle représente un levier puissant pour imaginer des solutions durables et accessibles. L'InnovTech Challenge encourage les étudiants à mobiliser leurs compétences techniques au service du progrès social.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- THEME -->
+<section id="theme" class="theme-section">
+    <span class="section-tag" style="display:inline-block">Thème 2026</span>
+    <div class="theme-big">
+        <span class="t1">Tech for</span>
+        <span class="t2">Social Impact</span>
+        <span class="t3">with AI</span>
+    </div>
+    <p class="section-desc" style="margin: 0 auto 60px; text-align:center">Quatre domaines d'impact où l'IA peut transformer la société</p>
+    <div class="pillars-row">
+        <div class="pillar fade-up">
+            <div class="pillar-icon">🌱</div>
+            <h4>Environnement</h4>
+        </div>
+        <div class="pillar fade-up" style="transition-delay:0.1s">
+            <div class="pillar-icon">📚</div>
+            <h4>Éducation</h4>
+        </div>
+        <div class="pillar fade-up" style="transition-delay:0.2s">
+            <div class="pillar-icon">💙</div>
+            <h4>Bien-être</h4>
+        </div>
+        <div class="pillar fade-up" style="transition-delay:0.4s">
+            <div class="pillar-icon">🏥</div>
+            <h4>Santé</h4>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- OBJECTIFS -->
+<section id="objectifs">
+    <div style="text-align:center;margin-bottom:60px">
+        <span class="section-tag" style="display:inline-block">Pourquoi participer</span>
+        <h2 class="section-title fade-up">Objectifs de l'<em>événement</em></h2>
+        <p class="section-desc fade-up" style="margin:0 auto">Ce que vous gagnerez en participant à l'InnovTech Challenge</p>
+    </div>
+    <div class="objectives-grid">
+        <div class="obj-card fade-up">
+            <div class="obj-number">01 / Compétences</div>
+            <h4>Développer votre expertise</h4>
+            <p>Concevoir et présenter des solutions IA dans un cadre académique et professionnel stimulant avec accompagnement de mentors.</p>
+        </div>
+        <div class="obj-card fade-up" style="transition-delay:0.1s">
+            <div class="obj-number">02 / Innovation</div>
+            <h4>Innover pour la société</h4>
+            <p>Résoudre de vraies problématiques sociétales en mobilisant l'intelligence artificielle comme levier d'impact durable.</p>
+        </div>
+        <div class="obj-card fade-up" style="transition-delay:0.2s">
+            <div class="obj-number">03 / Réseau</div>
+            <h4>Élargir votre réseau</h4>
+            <p>Rencontrer d'autres étudiants passionnés, des professionnels et des experts du secteur technologique marocain.</p>
+        </div>
+        <div class="obj-card fade-up" style="transition-delay:0.3s">
+            <div class="obj-number">04 / Responsabilité</div>
+            <h4>Technologie responsable</h4>
+            <p>Renforcer la culture de l'innovation éthique et de la responsabilité technologique au sein de la communauté ESITH.</p>
+        </div>
+        <div class="obj-card fade-up" style="transition-delay:0.4s">
+            <div class="obj-number">05 / Valorisation</div>
+            <h4>Valoriser vos projets</h4>
+            <p>Présenter vos travaux sur une plateforme professionnelle visible par l'ensemble de l'écosystème technologique.</p>
+        </div>
+        <div class="obj-card fade-up" style="transition-delay:0.5s">
+            <div class="obj-number">06 / Reconnaissance</div>
+            <h4>Être récompensé</h4>
+            <p>Concourir pour des prix et une reconnaissance officielle de votre talent et de votre créativité par le jury.</p>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PROGRAMME -->
+<section id="programme">
+    <div style="text-align:center; margin-bottom:60px">
+        <span class="section-tag" style="display:inline-block">15 Avril 2026</span>
+        <h2 class="section-title fade-up">Programme de la <em>journée</em></h2>
+    </div>
+    <div class="schedule-wrapper">
+        <div class="schedule-day-header">Jour J — InnovTech Challenge 2026</div>
+
+        <div class="timeline-row">
+            <div class="tl-time">08:30</div>
+            <div class="tl-dot-line"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-card fade-up"><h4>Accueil & Enregistrement</h4><p>Accueil des participants, remise des badges, briefing général</p></div>
+        </div>
+        <div class="timeline-row">
+            <div class="tl-time">09:30</div>
+            <div class="tl-dot-line"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-card fade-up"><h4>Cérémonie d'ouverture</h4><p>Allocution de bienvenue du club CYBOTICS et présentation de l'événement</p></div>
+        </div>
+        <div class="timeline-row">
+            <div class="tl-time">10:00</div>
+            <div class="tl-dot-line"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-card fade-up"><h4>Présentation des équipes — Manche 1</h4><p>Premières présentations des projets devant le jury et les participants</p></div>
+        </div>
+        <div class="timeline-row">
+            <div class="tl-time">12:30</div>
+            <div class="tl-dot-line"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-card fade-up"><h4>Pause déjeuner & Networking</h4><p>Échanges informels, networking entre participants et professionnels</p></div>
+        </div>
+        <div class="timeline-row">
+            <div class="tl-time">14:00</div>
+            <div class="tl-dot-line"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-card fade-up"><h4>Présentation des équipes — Manche 2</h4><p>Deuxièmes présentations et démonstrations des solutions numériques</p></div>
+        </div>
+        <div class="timeline-row">
+            <div class="tl-time">16:30</div>
+            <div class="tl-dot-line"><div class="tl-dot"></div><div class="tl-line"></div></div>
+            <div class="tl-card fade-up"><h4>Délibération du jury</h4><p>Évaluation finale des projets par le panel de juges experts</p></div>
+        </div>
+        <div class="timeline-row">
+            <div class="tl-time">17:30</div>
+            <div class="tl-dot-line"><div class="tl-dot"></div></div>
+            <div class="tl-card fade-up"><h4>🏆 Cérémonie de clôture & Remise des prix</h4><p>Annonce des résultats, remise des trophées et photos officielles</p></div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+
+<!-- CTA -->
+<section id="participer">
+    <div class="cta-banner fade-up">
+        <span class="section-tag" style="display:inline-block;margin-bottom:12px">Rejoignez-nous</span>
+        <h2>Prêt à relever le <em style="color:var(--accent);font-style:normal">défi</em> ?</h2>
+        <p>Inscrivez-vous maintenant et montrez comment votre projet peut transformer la société grâce à l'IA.</p>
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+            <a href="https://www.instagram.com/cybo.tics/" target="_blank" class="btn-primary">S'inscrire à l'événement</a>
+            <a href="mailto:contact@cybotics-esith.ma" class="btn-outline">Nous contacter</a>
+        </div>
+    </div>
+</section>
+
+
+<!-- VENUE -->
+<section id="venue">
+    <div class="venue-layout">
+        <div class="fade-up">
+            <span class="section-tag">Lieu</span>
+            <h2 class="section-title">ESITH<br><em>Casablanca</em></h2>
+            <div class="venue-info-block">
+                <h3>École Supérieure des Industries du Textile et de l'Habillement</h3>
+                <div class="venue-detail-item">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <span>Route El Jadida Km 8, BP : 7731<br>Quartier Laymoune, Casablanca</span>
+                </div>
+                <div class="venue-detail-item">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <span>15 Avril 2026 · 08h30 — 18h00</span>
+                </div>
+                <div class="venue-detail-item">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/></svg>
+                    <span>Accessible en transport en commun depuis le centre-ville de Casablanca</span>
+                </div>
+                <div class="venue-detail-item">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    <span>Parking disponible sur place</span>
+                </div>
+            </div>
+        </div>
+        <div class="venue-map-wrap fade-up">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3323.0!2d-7.6664467!3d33.5392121!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xda62cdcdf8ccb4d%3A0xb1d05917afdba2e1!2sEcole%20Sup%C3%A9rieure%20des%20Industries%20du%20Textile%20et%20Habillement%20ESITH!5e0!3m2!1sfr!2sma!4v1700000000000!5m2!1sfr!2sma"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                title="ESITH Casablanca Map">
+            </iframe>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <div class="logo-word">CYBOTICS</div>
+            <p>Club étudiant de l'ESITH dédié aux technologies, à l'innovation et au développement des compétences numériques. Fondé en décembre 2022.</p>
+            <div class="footer-socials">
+                <a href="https://www.instagram.com/cybo.tics/" target="_blank" class="social-btn" aria-label="Instagram">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                </a>
+                <a href="https://www.linkedin.com/company/cybotics-esith/about/" target="_blank" class="social-btn" aria-label="LinkedIn">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                </a>
+            </div>
+        </div>
+        <div class="footer-col">
+            <h5>Navigation</h5>
+            <a href="#about">À propos</a>
+            <a href="#theme">Thème</a>
+            <a href="#objectifs">Objectifs</a>
+            <a href="#programme">Programme</a>
+            <a href="#venue">Lieu</a>
+        </div>
+        <div class="footer-col">
+            <h5>Contact</h5>
+            <a href="https://www.instagram.com/cybo.tics/" target="_blank">@cybo.tics</a>
+            <a href="https://www.linkedin.com/company/cybotics-esith/about/" target="_blank">LinkedIn CYBOTICS</a>
+            <a href="#venue">ESITH, Route El Jadida Km 8<br>Casablanca</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>© 2026 CYBOTICS — ESITH Casablanca. Tous droits réservés.</span>
+        <span style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.1em">INNOVTECH CHALLENGE · 1ÈRE ÉDITION</span>
+    </div>
+</footer>
+
+<script>
+// ─── COUNTDOWN ───
+function updateCountdown() {
+    const event = new Date('April 15, 2026 08:30:00').getTime();
+    const now = Date.now();
+    const diff = event - now;
+    if (diff <= 0) {
+        ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(id => document.getElementById(id).textContent = '00');
+        return;
+    }
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins = Math.floor((diff % 3600000) / 60000);
+    const secs = Math.floor((diff % 60000) / 1000);
+    document.getElementById('cd-days').textContent = String(days).padStart(2,'0');
+    document.getElementById('cd-hours').textContent = String(hours).padStart(2,'0');
+    document.getElementById('cd-mins').textContent = String(mins).padStart(2,'0');
+    document.getElementById('cd-secs').textContent = String(secs).padStart(2,'0');
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+// ─── SCROLL ANIMATIONS ───
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+// ─── MOBILE MENU ───
+const btn = document.getElementById('hamburger');
+const overlay = document.getElementById('mobileOverlay');
+btn.addEventListener('click', () => overlay.classList.toggle('open'));
+document.querySelectorAll('.mob-link').forEach(a => a.addEventListener('click', () => overlay.classList.remove('open')));
+
+// ─── SMOOTH SCROLL ───
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    });
+});
+</script>
+</body>
+</html>
