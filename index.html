@@ -983,6 +983,12 @@
             .cd-item:last-child { border-radius: 0 0 8px 8px; }
             .cd-item:not(:first-child) { border-left: 1px solid var(--border); border-top: none; }
         }
+        @media (max-width: 768px) {
+        .hero-title .line1,
+        .hero-title .line2 {
+            font-size: clamp(2.2rem, 10vw, 3.5rem);
+        }
+        }
     </style>
 </head>
 <body>
@@ -1238,8 +1244,8 @@
         <h2>Prêt à relever le <em style="color:var(--accent);font-style:normal">défi</em> ?</h2>
         <p>Inscrivez-vous maintenant et montrez comment votre projet peut transformer la société grâce à l'IA.</p>
         <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
-            <a href="https://www.instagram.com/cybo.tics/" target="_blank" class="btn-primary">S'inscrire à l'événement</a>
-            <a href="mailto:contact@cybotics-esith.ma" class="btn-outline">Nous contacter</a>
+            <a href="https://najlaalarche.github.io/innovtech_challengeform/" target="_blank" class="btn-primary">S'inscrire à l'événement</a>
+            <a href="https://www.instagram.com/cybo.tics/" class="btn-outline">Nous contacter</a>
         </div>
     </div>
 </section>
